@@ -1,0 +1,101 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <script src="https://unpkg.com/three@0.137.4/build/three.min.js"></script>
+    <script src="https://unpkg.com/three@0.137.4/examples/js/controls/OrbitControls.js"></script>
+  </head>
+<body>
+ <h1>WebGL 最終レポート</h1>
+ 実現しようとしたこと：pointクラスを活用して、満天の星空を表現しようとしました。小さい頃から好きだった情景なので、感慨深い作品になりました。
+ <script>
+        // ページの読み込みを待つ
+        window.addEventListener('DOMContentLoaded', init);
+
+        function init() {
+            // サイズを指定
+            const width = 800;
+            const height = 600;
+
+            // レンダラーを作成
+            var renderer = new THREE.WebGLRenderer();
+            document.body.appendChild(renderer.domElement);            
+            renderer.setSize(width, height);
+            // 背景の色を設定
+            renderer.setClearColor(0x051637);
+
+
+            // シーンを作成
+            const scene = new THREE.Scene();
+
+            // カメラを作成
+            const camera = new THREE.PerspectiveCamera(45, width / height);
+            // カメラの初期座標を設定
+            camera.position.set(0, 0, 5);
+
+            // カメラコントローラーを作成
+            const controls = new THREE.OrbitControls(camera, document.body); 
+            
+            // 平行光源1
+            var directionalLight1 = new THREE.DirectionalLight(0xffffff);
+            directionalLight1.position.set(10, 10, 10);
+            // シーンに追加
+            scene.add(directionalLight1);
+            // 平行光源2
+            var directionalLight2 = new THREE.DirectionalLight(0x888888);
+            directionalLight2.position.set(-10, -10, 10);
+            // シーンに追加
+            scene.add(directionalLight2);
+
+
+            // 星屑を作成します (カメラの動きをわかりやすくするため)
+            createStarField();
+
+            function createStarField() {
+              // 頂点情報を格納する配列
+              const vertices = [];
+
+              // 配置する範囲
+              const SIZE = 10000;
+              // 配置する個数
+              const LENGTH = 1000000;
+
+              for (let i = 0; i < LENGTH; i++) {
+                const x = SIZE * (Math.random() - 0.5);
+                const y = SIZE * (Math.random() - 0.5);
+                const z = SIZE * (Math.random() - 0.5);
+
+                vertices.push(x, y, z);
+              }
+
+              // 形状データを作成
+              const geometry = new THREE.BufferGeometry();
+              geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
+
+              // マテリアルを作成
+              const material = new THREE.PointsMaterial({
+                // 一つ一つのサイズ
+                size: 1,
+                // 色
+                color: 0xfff100,
+              });
+
+              // 物体を作成
+              const mesh = new THREE.Points(geometry, material);
+              scene.add(mesh);
+            }
+            update();
+
+            // 毎フレーム時に実行されるループイベントです
+            function update() {
+                // レンダリング
+                renderer.render(scene, camera);
+                requestAnimationFrame(update);
+
+                // 箱を回転させる
+                box.rotation.x += 0.01;
+                box.rotation.y += 0.01;
+
+            }
+        }
+    </script>
+</body>
